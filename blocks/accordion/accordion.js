@@ -1,4 +1,3 @@
-/* TO DO check that _accordion.json is matching this */
 import { moveInstrumentation } from '../../scripts/scripts.js';
 
 export default function decorate(block) {
