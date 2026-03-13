@@ -84,6 +84,7 @@ module.exports = {
     'xwalk/max-cells': ['error', {
       section: 30, // section is a key-value block and over 4 is OK
     }],
+    'max-len': ['error', { code: 220 }],
     'no-restricted-syntax': [
       'error',
       {
