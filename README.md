@@ -22,6 +22,7 @@ npm i
 ```
 
 ## Linting
+max length lines for JS allows up to 220, and descending specificity for CSS has been disabled so the ExMod tool doesn't burn through tokens attempting to fix.
 
 ```sh
 npm run lint
