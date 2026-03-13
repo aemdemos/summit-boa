@@ -12,8 +12,8 @@ import { decorateMain, decorateSections, decorateButtons } from './scripts.js';
 
 function getState(block) {
   if (block.matches('.accordion')) {
-    return [...block.querySelectorAll('details[open]')].map(
-      (details) => details.dataset.aueResource,
+    return [...block.querySelectorAll('li.accordion-item.active')].map(
+      (item) => item.dataset.aueResource,
     );
   }
   if (block.matches('.carousel')) {
@@ -29,8 +29,8 @@ function getState(block) {
 
 function setState(block, state) {
   if (block.matches('.accordion')) {
-    block.querySelectorAll('details').forEach((details) => {
-      details.open = state.includes(details.dataset.aueResource);
+    block.querySelectorAll('li.accordion-item').forEach((item) => {
+      item.classList.toggle('active', state.includes(item.dataset.aueResource));
     });
   }
   if (block.matches('.carousel')) {
