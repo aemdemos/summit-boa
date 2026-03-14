@@ -63,6 +63,22 @@ export function updateActiveSlide(block, slide, options = {}) {
 }
 
 /**
+ * Returns the slide index that best matches the container's current scroll position
+ * (the slide whose left edge is at or just to the left of scrollLeft).
+ * @param {Element} container - Scrollable element
+ * @param {NodeListOf<Element>} slides - Slide elements
+ * @returns {number}
+ */
+function getCurrentSlideIndexFromScroll(container, slides) {
+  const scrollLeft = container.scrollLeft;
+  for (let i = 0; i < slides.length; i += 1) {
+    const slide = slides[i];
+    if (scrollLeft < slide.offsetLeft + slide.offsetWidth) return i;
+  }
+  return slides.length - 1;
+}
+
+/**
  * Scrolls the slider to the given slide index (with wrap).
  * @param {Element} block - Root block element
  * @param {number} slideIndex - Desired slide index
@@ -111,7 +127,11 @@ function bindEvents(block, options = {}) {
   const prevBtn = block.querySelector(opts.prevSelector);
   if (prevBtn) {
     prevBtn.addEventListener('click', () => {
-      const current = parseInt(block.dataset[opts.activeSlideAttr], 10) || 0;
+      const container = block.querySelector(opts.slidesContainer);
+      const slides = block.querySelectorAll(opts.slideSelector);
+      const current = container && slides.length
+        ? getCurrentSlideIndexFromScroll(container, slides)
+        : parseInt(block.dataset[opts.activeSlideAttr], 10) || 0;
       showSlide(block, current - 1, 'smooth', opts);
     });
   }
@@ -119,7 +139,11 @@ function bindEvents(block, options = {}) {
   const nextBtn = block.querySelector(opts.nextSelector);
   if (nextBtn) {
     nextBtn.addEventListener('click', () => {
-      const current = parseInt(block.dataset[opts.activeSlideAttr], 10) || 0;
+      const container = block.querySelector(opts.slidesContainer);
+      const slides = block.querySelectorAll(opts.slideSelector);
+      const current = container && slides.length
+        ? getCurrentSlideIndexFromScroll(container, slides)
+        : parseInt(block.dataset[opts.activeSlideAttr], 10) || 0;
       showSlide(block, current + 1, 'smooth', opts);
     });
   }
@@ -133,6 +157,67 @@ function bindEvents(block, options = {}) {
   block.querySelectorAll(opts.slideSelector).forEach((slide) => {
     slideObserver.observe(slide);
   });
+}
+
+/**
+ * Default options for createSliderControls (class names and labels).
+ * Override when creating controls for a different block (e.g. card-carousel).
+ */
+const DEFAULT_CONTROL_OPTIONS = {
+  listClass: 'carousel-slide-indicators',
+  indicatorItemClass: 'carousel-slide-indicator',
+  navButtonsWrapperClass: 'carousel-navigation-buttons',
+  prevClass: 'slide-prev',
+  nextClass: 'slide-next',
+  indicatorsAriaLabel: 'Carousel Slide Controls',
+  prevAriaLabel: 'Previous Slide',
+  nextAriaLabel: 'Next Slide',
+  /** @param {number} index - 0-based slide index @param {number} total - slide count */
+  indicatorAriaLabel: (index, total) => `Show Slide ${index + 1} of ${total}`,
+};
+
+/**
+ * Creates the DOM for slider controls: indicators nav (ol with one li per slide) and prev/next buttons.
+ * Caller is responsible for appending indicatorsNav and buttonsContainer to the block/container.
+ * @param {number} slideCount - Number of slides (and indicator dots)
+ * @param {Object} options - Optional overrides for class names and aria labels (see DEFAULT_CONTROL_OPTIONS)
+ * @returns {{ indicatorsNav: HTMLElement, buttonsContainer: HTMLElement }}
+ */
+export function createSliderControls(slideCount, options = {}) {
+  const opts = { ...DEFAULT_CONTROL_OPTIONS, ...options };
+
+  const indicatorsNav = document.createElement('nav');
+  indicatorsNav.setAttribute('aria-label', opts.indicatorsAriaLabel);
+  const list = document.createElement('ol');
+  list.classList.add(opts.listClass);
+
+  for (let idx = 0; idx < slideCount; idx += 1) {
+    const indicator = document.createElement('li');
+    indicator.classList.add(opts.indicatorItemClass);
+    indicator.setAttribute('data-target-slide', String(idx));
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.setAttribute('aria-label', typeof opts.indicatorAriaLabel === 'function'
+      ? opts.indicatorAriaLabel(idx, slideCount)
+      : opts.indicatorAriaLabel);
+    indicator.append(btn);
+    list.append(indicator);
+  }
+  indicatorsNav.append(list);
+
+  const buttonsContainer = document.createElement('div');
+  buttonsContainer.classList.add(opts.navButtonsWrapperClass);
+  const prevBtn = document.createElement('button');
+  prevBtn.type = 'button';
+  prevBtn.classList.add(opts.prevClass);
+  prevBtn.setAttribute('aria-label', opts.prevAriaLabel);
+  const nextBtn = document.createElement('button');
+  nextBtn.type = 'button';
+  nextBtn.classList.add(opts.nextClass);
+  nextBtn.setAttribute('aria-label', opts.nextAriaLabel);
+  buttonsContainer.append(prevBtn, nextBtn);
+
+  return { indicatorsNav, buttonsContainer };
 }
 
 /**

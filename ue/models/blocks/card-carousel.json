@@ -1,22 +1,22 @@
 {
   "definitions": [
     {
-      "title": "Cards",
-      "id": "cards",
+      "title": "Card Carousel",
+      "id": "card-carousel",
       "plugins": {
         "da": {
           "rows": 0,
           "columns": 0
         }
       },
-      "model": "cards",
-      "filter": "cards"
+      "model": "card-carousel",
+      "filter": "card-carousel"
     }
   ],
   "models": [],
   "filters": [
     {
-      "id": "cards",
+      "id": "card-carousel",
       "components": [
         "card"
       ]

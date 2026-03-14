@@ -81,27 +81,53 @@
           }
         },
         {
-          "title": "Cards",
-          "id": "cards",
+          "title": "Card Carousel",
+          "id": "card-carousel",
           "plugins": {
             "da": {
-              "name": "cards",
-              "unsafeHTML": "<div><div><div><picture><source type=\"image/webp\" srcset=\"\"><source type=\"image/jpeg\" srcset=\"\"><img loading=\"lazy\"></picture></div><div></div></div></div>"
+              "rows": 0,
+              "columns": 0
             }
           },
-          "model": "cards",
-          "filter": "cards"
+          "model": "card-carousel",
+          "filter": "card-carousel"
         },
         {
           "title": "Card",
           "id": "card",
+          "model": "card",
           "plugins": {
             "da": {
-              "name": "card",
-              "unsafeHTML": "<div><div><picture><source type=\"image/webp\" srcset=\"\"><source type=\"image/jpeg\" srcset=\"\"><img loading=\"lazy\"></picture></div><div></div></div>"
+              "rows": 1,
+              "columns": 2,
+              "fields": [
+                {
+                  "name": "image",
+                  "selector": "div:nth-child(1)>picture>img[src]"
+                },
+                {
+                  "name": "imageAlt",
+                  "selector": "div:nth-child(1)>picture>img[alt]"
+                },
+                {
+                  "name": "text",
+                  "selector": "div:nth-child(2)"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "title": "Cards",
+          "id": "cards",
+          "plugins": {
+            "da": {
+              "rows": 0,
+              "columns": 0
             }
           },
-          "model": "card"
+          "model": "cards",
+          "filter": "cards"
         },
         {
           "title": "Carousel",

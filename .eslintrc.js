@@ -100,7 +100,7 @@ module.exports = {
       ignore: ['^https?://'],
     }],
     // allow template literals to span lines without looking weird
-    'indent': ['error', 2, {
+    indent: ['error', 2, {
       ignoredNodes: ['TemplateLiteral *'],
       SwitchCase: 1,
     }],
