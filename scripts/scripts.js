@@ -61,6 +61,7 @@ export function moveAttributes(from, to, attributes) {
   attributes.forEach((attr) => {
     const value = from.getAttribute(attr);
     if (value) {
+      // DA UE doesn't like the ?. operator, but I know it works with Xwalk
     // to?.setAttribute(attr, value);
     // from?.removeAttribute(attr);
       to.setAttribute(attr, value);
@@ -106,6 +107,16 @@ function buildHeroBlock(main) {
   }
 }
 */
+
+/* add a block id_number to a block instance (when any decorate(block) defines it)
+  to be used for martech tracking, aria-controls, aria-labelledby, etc.
+*/
+const blockIds = new Map();
+export function getBlockId(name) {
+  const forBlock = blockIds.get(name) ?? 0;
+  blockIds.set(name, forBlock + 1);
+  return `${name}_${forBlock}`;
+}
 
 /**
  * load fonts.css and set a session storage flag
