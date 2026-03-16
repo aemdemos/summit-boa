@@ -42,6 +42,8 @@ https://main--ise-boilerplate--aemdemos.aem.page/docs/library/blocks/section-met
 
 https://main--ise-boilerplate--aemdemos.aem.page/docs/library/blocks/table
 
+https://main--ise-boilerplate--aemdemos.aem.page/docs/library/blocks/metadata
+
 https://main--ise-boilerplate--aemdemos.aem.page/docs/library/blocks/tabs
 
 https://main--ise-boilerplate--aemdemos.aem.page/docs/library/blocks/video
