@@ -29,10 +29,6 @@
 .card-carousel .card-carousel-slide {
   scroll-snap-align: start;
   box-sizing: border-box;
-}
-
-/* Card styling (matches Cards block) */
-.card-carousel .card-carousel-slide {
   border: var(--card-carousel-card-border-width) solid var(--card-carousel-card-border-color);
   background-color: var(--background-color);
 }
