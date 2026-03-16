@@ -28,7 +28,7 @@ https://main--ise-boilerplate--aemdemos.aem.page/docs/library/blocks/fragment
 
 https://main--ise-boilerplate--aemdemos.aem.page/docs/library/blocks/hero
 
-https://main--ise-boilerplate--aemdemos.aem.page/docs/library/blocksmodal
+https://main--ise-boilerplate--aemdemos.aem.page/docs/library/blocks/modal
 
 https://main--ise-boilerplate--aemdemos.aem.page/docs/library/blocks/quote
 
