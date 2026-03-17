@@ -175,7 +175,7 @@ CSS rules:
 - User says: "start fresh", "new migration" → invoke as first step.
 
 **How to invoke:**
-Read and follow the complete workflow in `.claude/skills/get-general-styling.md`. Execute every phase in order. Do not skip phases. Mark each phase complete only after its validation checklist passes.
+Read and follow the complete workflow in `.agents/skills/get-general-styling.md`. Execute every phase in order. Do not skip phases. Mark each phase complete only after its validation checklist passes.
 
 **When to skip:**
 - Only skip if `migration-work/design-system-extracted.json` exists AND its `sourceDomain` matches the site being migrated.
@@ -202,7 +202,7 @@ Once `migration-work/design-system-extracted.json` exists with `"status": "compl
 - User says: "validate nav structure", "fix header", "header doesn't match source" → invoke for validation/remediation.
 
 **How to invoke:**
-Read and follow the complete workflow in `.claude/skills/excat-navigation-orchestrator/SKILL.md`. Execute every phase in order — desktop first (Phases 1–3, aggregate, implement, validate), then mobile only after customer confirmation. Do not skip phases or validation gates.
+Read and follow the complete workflow in `.agents/skills/excat-navigation-orchestrator/SKILL.md`. Execute every phase in order — desktop first (Phases 1–3, aggregate, implement, validate), then mobile only after customer confirmation. Do not skip phases or validation gates.
 
 **Prerequisites:**
 - The page must already be migrated (use `excat-page-migration` first if it isn't).
