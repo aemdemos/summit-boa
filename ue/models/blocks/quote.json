@@ -4,6 +4,8 @@
       "title": "Quote",
       "id": "quote",
       "model": "quote",
+      "quote": "Lorem Ipsum Quote",
+      "author": "Lorem Ipsum Author",
       "plugins": {
         "da": {
           "rows": 2,
@@ -11,9 +13,7 @@
           "fields": [
             { "name": "quote", "selector": "div:nth-child(1)>div"},
             { "name": "author", "selector": "div:nth-child(2)>div"}
-          ],
-          "quote": "Lorem Ipsum Quote",
-          "author": "Lorem Ipsum Author"
+          ]
         }
       }
     }
