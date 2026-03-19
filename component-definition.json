@@ -187,6 +187,7 @@
         {
           "title": "Quote",
           "id": "quote",
+          "model": "quote",
           "plugins": {
             "da": {
               "rows": 2,
