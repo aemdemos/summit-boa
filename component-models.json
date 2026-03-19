@@ -183,8 +183,9 @@
       {
         "component": "richtext",
         "name": "author",
-        "label": "Author text",
-        "valueType": "string"
+        "label": "Author (optional)",
+        "valueType": "string",
+        "description": "Use italics for [cite] tag"
       }
     ]
   },

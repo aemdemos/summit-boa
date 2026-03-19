@@ -4,8 +4,6 @@
       "title": "Quote",
       "id": "quote",
       "model": "quote",
-      "quote": "Lorem Ipsum Quote",
-      "author": "Lorem Ipsum Author",
       "plugins": {
         "da": {
           "rows": 2,
@@ -32,8 +30,9 @@
         {
           "component": "richtext",
           "name": "author",
-          "label": "Author text",
-          "valueType": "string"
+          "label": "Author (optional)",
+          "valueType": "string",
+          "description": "Use italics for [cite] tag"
         }
       ]
     }

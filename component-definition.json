@@ -188,8 +188,6 @@
           "title": "Quote",
           "id": "quote",
           "model": "quote",
-          "quote": "Lorem Ipsum Quote",
-          "author": "Lorem Ipsum Author",
           "plugins": {
             "da": {
               "rows": 2,
