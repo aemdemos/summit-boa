@@ -52,8 +52,8 @@ export function moveInstrumentation(from, to) {
  */
 export function activateTabPanel(blockEl, panelEl) {
   if (
-    !blockEl?.classList.contains('tabs')
-    || !panelEl?.matches?.('.tabs-panel[role="tabpanel"]')
+    !blockEl?.matches?.('.tabs')
+    || !panelEl?.matches?.('.tabs-panel')
     || !blockEl.contains(panelEl)
   ) {
     return;

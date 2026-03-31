@@ -194,51 +194,79 @@ const setupObservers = () => {
   });
 };
 
-const setupUEEventHandlers = () => {
-  document.addEventListener('aue:ui-select', (event) => {
-    const { detail } = event;
-    const resource = detail?.resource;
+/** hardening for the attribute selector, to prevent XSS attacks.
+ * Escape " and \\ for use inside a double-quoted attribute selector value. */
+function escapeDataAueResourceForSelector(resource) {
+  return String(resource).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+}
 
-    if (resource) {
-      const element = document.querySelector(`[data-aue-resource="${resource}"]`);
+const setupUEEventHandlers = () => {
+  /**
+   * Capture phase: inactive tab panels use display:none (tabs.css). UE/host scroll-into-view for the
+   * selected resource runs after target phase; if we only switched tabs in bubble, the node stayed
+   * hidden and the preview jumped (often to top). Activate the matching tab first.
+   */
+  document.addEventListener(
+    'aue:ui-select',
+    (event) => {
+      const { detail } = event;
+      const resource = detail?.resource;
+
+      if (!resource) {
+        return;
+      }
+
+      const safe = escapeDataAueResourceForSelector(resource);
+      const element = document.querySelector(`[data-aue-resource="${safe}"]`);
       if (!element) {
         return;
       }
-      const blockEl = element.parentElement?.closest('.block[data-aue-resource]') || element?.closest('.block[data-aue-resource]');
-      if (blockEl) {
-        const block = blockEl.getAttribute('data-aue-model');
-        const index = element.getAttribute('data-slide-index');
 
-        switch (block) {
-          case 'accordion':
-            blockEl.querySelectorAll('details').forEach((details) => {
-              details.open = false;
-            });
-            element.open = true;
-            break;
-          case 'carousel':
-            if (index) {
-              showSlide(blockEl, index);
-            }
-            break;
-          case 'tabs':
-            if (element === blockEl) {
-              return;
-            }
-            {
-              const panel = element.closest('.tabs-panel[role="tabpanel"]');
-              if (!panel) {
-                break;
-              }
-              activateTabPanel(blockEl, panel);
-            }
-            break;
-          default:
-            break;
-        }
+      const blockEl = element.parentElement?.closest('.block[data-aue-resource]')
+        || element?.closest('.block[data-aue-resource]');
+      if (!blockEl) {
+        return;
       }
-    }
-  });
+
+      const blockModel = blockEl.getAttribute('data-aue-model');
+      const isTabsBlock = blockEl.matches('.tabs') || blockModel === 'tabs';
+
+      if (isTabsBlock) {
+        if (element !== blockEl) {
+          let panel = element.closest('.tabs-panel');
+          if ((!panel || !blockEl.contains(panel)) && blockEl.contains(element)) {
+            const inner = blockEl.querySelector(
+              `:scope > .tabs-panel [data-aue-resource="${safe}"]`,
+            );
+            panel = inner?.closest('.tabs-panel');
+          }
+          if (panel && blockEl.contains(panel)) {
+            activateTabPanel(blockEl, panel);
+          }
+        }
+        return;
+      }
+
+      const index = element.getAttribute('data-slide-index');
+
+      switch (blockModel) {
+        case 'accordion':
+          blockEl.querySelectorAll('details').forEach((details) => {
+            details.open = false;
+          });
+          element.open = true;
+          break;
+        case 'carousel':
+          if (index) {
+            showSlide(blockEl, index);
+          }
+          break;
+        default:
+          break;
+      }
+    },
+    true,
+  );
 };
 
 export default () => {

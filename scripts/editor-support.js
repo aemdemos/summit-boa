@@ -39,7 +39,7 @@ function setState(block, state) {
     showSlide(block, state, 'instant');
   }
   if (block.matches('.tabs')) {
-    const panel = [...block.querySelectorAll('.tabs-panel[role="tabpanel"]')]
+    const panel = [...block.querySelectorAll('.tabs-panel')]
       .find((tab) => tab.dataset.aueResource === state);
     if (panel) {
       activateTabPanel(block, panel);
@@ -155,7 +155,7 @@ function handleSelection(event) {
     }
 
     if (block && block.matches('.tabs')) {
-      const panel = element.closest('.tabs-panel[role="tabpanel"]');
+      const panel = element.closest('.tabs-panel');
       if (panel && block.contains(panel)) {
         setState(block, panel.dataset.aueResource);
       }
