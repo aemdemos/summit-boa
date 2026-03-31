@@ -12,15 +12,113 @@
 
 /* eslint-disable sonarjs/cognitive-complexity */
 import { showSlide } from '../../scripts/slider.js';
-import { moveInstrumentation } from './ue-utils.js';
+import { activateTabPanel, moveInstrumentation } from './ue-utils.js';
+
+/**
+ * Load tabs resync only when needed. A static import of blocks/tabs/tabs.js would pull in scripts.js
+ * while scripts.js is still awaiting this module on ue.da.live (circular dependency → broken UE page).
+ * @returns {Promise<{ resyncTabsBlock: (el: Element) => void }>}
+ */
+function loadTabsModule() {
+  const base = window.hlx?.codeBasePath ?? '';
+  // eslint-disable-next-line import/no-unresolved -- runtime URL from codeBasePath
+  return import(`${base}/blocks/tabs/tabs.js`);
+}
+
+/**
+ * Move UE instrumentation for tabs-item / panel swaps (after optional resync).
+ * @param {MutationRecord} mutation
+ */
+function handleTabsInstrumentation(mutation) {
+  const { addedNodes: addedElements, removedNodes: removedElements, target } = mutation;
+  if (removedElements.length === 1 && removedElements[0].attributes['data-aue-model']?.value === 'tabs-item') {
+    const resourceAttr = removedElements[0].getAttribute('data-aue-resource');
+    if (resourceAttr) {
+      const itemMatch = resourceAttr.match(/item-(\d+)/);
+      if (itemMatch && itemMatch[1]) {
+        const tabIndex = parseInt(itemMatch[1], 10);
+        const panels = target.querySelectorAll(':scope > .tabs-panel[role="tabpanel"]');
+        const targetPanel = Array.from(panels).find((panel) => parseInt(panel.getAttribute('data-tab-index'), 10) === tabIndex);
+        if (targetPanel) {
+          moveInstrumentation(removedElements[0], targetPanel);
+          const removed = removedElements[0];
+          const addedName = targetPanel.querySelector(':scope > div:nth-child(1)');
+          const addedContent = targetPanel.querySelector(':scope > div:nth-child(2)');
+          const removedName = removed.querySelector(':scope > div:nth-child(1)');
+          const removedContent = removed.querySelector(':scope > div:nth-child(2)');
+          if (removedName && addedName) moveInstrumentation(removedName, addedName);
+          if (removedContent && addedContent) moveInstrumentation(removedContent, addedContent);
+        }
+      }
+    }
+  } else if (addedElements.length === 1 && addedElements[0].matches('div.tabs-panel[role="tabpanel"]')) {
+    const removed = removedElements[0];
+    const added = addedElements[0];
+    if (removed && removed.nodeType === 1) {
+      moveInstrumentation(removed, added);
+      const addedName = added.querySelector(':scope > div:nth-child(1)');
+      const addedContent = added.querySelector(':scope > div:nth-child(2)');
+      const removedName = removed.querySelector(':scope > div:nth-child(1)');
+      const removedContent = removed.querySelector(':scope > div:nth-child(2)');
+      if (removedName && addedName) moveInstrumentation(removedName, addedName);
+      if (removedContent && addedContent) moveInstrumentation(removedContent, addedContent);
+    }
+  }
+}
+
+/**
+ * When tab rows are added or removed under div.tabs, rebuild the tablist (handles deletes from UE
+ * even when data-aue-model on mutation.target is not "tabs").
+ * @param {MutationRecord} mutation
+ * @returns {boolean} true if resync + instrumentation were scheduled asynchronously
+ */
+function scheduleTabsRowResyncIfNeeded(mutation) {
+  const tabsBlock = mutation.target.closest('div.tabs');
+  if (!tabsBlock) {
+    return false;
+  }
+
+  const tablistEl = tabsBlock.querySelector(':scope > .tabs-list');
+  const { addedNodes, removedNodes } = mutation;
+
+  const addedRow = [...addedNodes].some(
+    (n) => n.nodeType === Node.ELEMENT_NODE && n.parentElement === tabsBlock && n !== tablistEl,
+  );
+
+  const removedTabRow = [...removedNodes].some(
+    (n) => n.nodeType === Node.ELEMENT_NODE
+      && !(tablistEl?.contains(n))
+      && (
+        n.matches?.('.tabs-panel[role="tabpanel"]')
+        || n.getAttribute?.('role') === 'tabpanel'
+        || n.attributes?.['data-aue-model']?.value === 'tabs-item'
+      ),
+  );
+
+  if (!addedRow && !removedTabRow) {
+    return false;
+  }
+
+  loadTabsModule()
+    .then(({ resyncTabsBlock }) => {
+      resyncTabsBlock(tabsBlock);
+      handleTabsInstrumentation(mutation);
+    })
+    .catch(() => {
+      handleTabsInstrumentation(mutation);
+    });
+  return true;
+}
 
 const setupObservers = () => {
-  const mutatingBlocks = document.querySelectorAll('div.cards, div.carousel, div.accordion');
+  const mutatingBlocks = document.querySelectorAll('div.cards, div.carousel, div.accordion, div.tabs');
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
       if (mutation.type === 'childList' && mutation.target.tagName === 'DIV') {
         const addedElements = mutation.addedNodes;
         const removedElements = mutation.removedNodes;
+
+        const tabsRowResyncScheduled = scheduleTabsRowResyncIfNeeded(mutation);
 
         // detect the mutation type of the block or picture (for cards)
         const type = mutation.target.classList.contains('cards-card-image') ? 'cards-image' : mutation.target.attributes['data-aue-model']?.value;
@@ -79,6 +177,11 @@ const setupObservers = () => {
               }
             }
             break;
+          case 'tabs':
+            if (!tabsRowResyncScheduled) {
+              handleTabsInstrumentation(mutation);
+            }
+            break;
           default:
             break;
         }
@@ -91,52 +194,79 @@ const setupObservers = () => {
   });
 };
 
-const setupUEEventHandlers = () => {
-  document.addEventListener('aue:ui-select', (event) => {
-    const { detail } = event;
-    const resource = detail?.resource;
+/** hardening for the attribute selector, to prevent XSS attacks.
+ * Escape " and \\ for use inside a double-quoted attribute selector value. */
+function escapeDataAueResourceForSelector(resource) {
+  return String(resource).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+}
 
-    if (resource) {
-      const element = document.querySelector(`[data-aue-resource="${resource}"]`);
+const setupUEEventHandlers = () => {
+  /**
+   * Capture phase: inactive tab panels use display:none (tabs.css). UE/host scroll-into-view for the
+   * selected resource runs after target phase; if we only switched tabs in bubble, the node stayed
+   * hidden and the preview jumped (often to top). Activate the matching tab first.
+   */
+  document.addEventListener(
+    'aue:ui-select',
+    (event) => {
+      const { detail } = event;
+      const resource = detail?.resource;
+
+      if (!resource) {
+        return;
+      }
+
+      const safe = escapeDataAueResourceForSelector(resource);
+      const element = document.querySelector(`[data-aue-resource="${safe}"]`);
       if (!element) {
         return;
       }
-      const blockEl = element.parentElement?.closest('.block[data-aue-resource]') || element?.closest('.block[data-aue-resource]');
-      if (blockEl) {
-        const block = blockEl.getAttribute('data-aue-model');
-        const index = element.getAttribute('data-slide-index');
 
-        switch (block) {
-          case 'accordion':
-            blockEl.querySelectorAll('details').forEach((details) => {
-              details.open = false;
-            });
-            element.open = true;
-            break;
-          case 'carousel':
-            if (index) {
-              showSlide(blockEl, index);
-            }
-            break;
-          case 'tabs':
-            if (element === block) {
-              return;
-            }
-            blockEl.querySelectorAll('[role=tabpanel]').forEach((panel) => {
-              panel.setAttribute('aria-hidden', true);
-            });
-            element.setAttribute('aria-hidden', false);
-            blockEl.querySelector('.tabs-list').querySelectorAll('button').forEach((btn) => {
-              btn.setAttribute('aria-selected', false);
-            });
-            blockEl.querySelector(`[aria-controls=${element?.id}]`).setAttribute('aria-selected', true);
-            break;
-          default:
-            break;
-        }
+      const blockEl = element.parentElement?.closest('.block[data-aue-resource]')
+        || element?.closest('.block[data-aue-resource]');
+      if (!blockEl) {
+        return;
       }
-    }
-  });
+
+      const blockModel = blockEl.getAttribute('data-aue-model');
+      const isTabsBlock = blockEl.matches('.tabs') || blockModel === 'tabs';
+
+      if (isTabsBlock) {
+        if (element !== blockEl) {
+          let panel = element.closest('.tabs-panel');
+          if ((!panel || !blockEl.contains(panel)) && blockEl.contains(element)) {
+            const inner = blockEl.querySelector(
+              `:scope > .tabs-panel [data-aue-resource="${safe}"]`,
+            );
+            panel = inner?.closest('.tabs-panel');
+          }
+          if (panel && blockEl.contains(panel)) {
+            activateTabPanel(blockEl, panel);
+          }
+        }
+        return;
+      }
+
+      const index = element.getAttribute('data-slide-index');
+
+      switch (blockModel) {
+        case 'accordion':
+          blockEl.querySelectorAll('details').forEach((details) => {
+            details.open = false;
+          });
+          element.open = true;
+          break;
+        case 'carousel':
+          if (index) {
+            showSlide(blockEl, index);
+          }
+          break;
+        default:
+          break;
+      }
+    },
+    true,
+  );
 };
 
 export default () => {

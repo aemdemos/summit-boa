@@ -238,18 +238,19 @@
   },
   {
     "id": "tabs-item",
-    "title": "Tabs Item",
-    "model": "tabs-item",
     "fields": [
       {
-        "component": "text",
+        "component": "richtext",
         "name": "name",
+        "value": "name",
         "valueType": "string",
-        "label": "Tab Name"
+        "label": "Tab Name",
+        "required": true
       },
       {
         "component": "richtext",
         "name": "content",
+        "value": "content",
         "label": "Content",
         "valueType": "string"
       }

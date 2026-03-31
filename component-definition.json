@@ -324,20 +324,22 @@
           "title": "Tabs",
           "id": "tabs",
           "model": "tabs",
+          "filter": "tabs",
           "plugins": {
             "da": {
-              "columns": 1,
-              "rows": 2
+              "columns": 0,
+              "rows": 0
             }
           }
         },
         {
           "title": "Tabs Item",
           "id": "tabs-item",
+          "model": "tabs-item",
           "plugins": {
             "da": {
-              "columns": 0,
-              "rows": 2,
+              "columns": 2,
+              "rows": 1,
               "fields": [
                 {
                   "name": "name",
