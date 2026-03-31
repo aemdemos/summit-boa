@@ -238,8 +238,6 @@
   },
   {
     "id": "tabs-item",
-    "title": "Tabs Item",
-    "model": "tabs-item",
     "fields": [
       {
         "component": "text",

@@ -14,6 +14,7 @@
     {
       "title": "Tabs Item",
       "id": "tabs-item",
+      "model": "tabs-item",
       "plugins": {
         "da": {
           "columns": 0,
@@ -29,8 +30,6 @@
   "models": [
     {
       "id": "tabs-item",
-      "title": "Tabs Item",
-      "model": "tabs-item",
       "fields": [
         {
           "component": "text",

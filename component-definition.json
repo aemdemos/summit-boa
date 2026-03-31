@@ -334,6 +334,7 @@
         {
           "title": "Tabs Item",
           "id": "tabs-item",
+          "model": "tabs-item",
           "plugins": {
             "da": {
               "columns": 0,
