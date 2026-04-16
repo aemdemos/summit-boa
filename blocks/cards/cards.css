@@ -12,10 +12,41 @@
 .cards > ul > li {
   border: var(--cards-card-border-width) solid var(--cards-card-border-color);
   background-color: var(--background-color);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
+  transition: box-shadow 0.2s ease;
+}
+
+.cards > ul > li:hover {
+  box-shadow: 0 4px 16px rgb(0 0 0 / 15%);
 }
 
 .cards .cards-card-body {
   margin: var(--cards-card-body-margin);
+}
+
+.cards .cards-card-body h3 {
+  color: var(--accent-primary-dark);
+  font-weight: 100;
+  font-size: var(--heading-font-size-s);
+  line-height: 1.25;
+  margin-top: 0;
+}
+
+.cards .cards-card-body h3 a {
+  color: var(--accent-blue);
+  text-decoration: none;
+}
+
+.cards .cards-card-body h3 a:hover {
+  text-decoration: underline;
+}
+
+.cards .cards-card-body p {
+  color: var(--text-color);
+  font-size: var(--body-font-size-s);
+  line-height: 1.5;
 }
 
 .cards .cards-card-image {
@@ -26,4 +57,23 @@
   width: 100%;
   aspect-ratio: var(--cards-image-aspect-ratio);
   object-fit: var(--cards-image-object-fit);
+}
+
+/* Text-only cards (no image) — feature story style */
+.cards > ul > li:not(:has(.cards-card-image)) {
+  background-color: var(--light-color);
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.cards > ul > li:not(:has(.cards-card-image)) .cards-card-body h3 {
+  font-size: var(--heading-font-size-m);
+}
+
+@media (width >= 900px) {
+  .cards > ul {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }

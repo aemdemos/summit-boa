@@ -6,6 +6,7 @@ header .nav-wrapper {
   width: 100%;
   z-index: 2;
   position: fixed;
+  border-bottom: 1px solid var(--overlay-background-color);
 }
 
 header nav {
@@ -53,7 +54,13 @@ header nav p {
 }
 
 header nav a {
-  color: currentcolor;
+  color: var(--header-nav-link-color);
+  text-decoration: none;
+  font-size: var(--header-nav-link-size);
+}
+
+header nav a:hover {
+  text-decoration: underline;
 }
 
 /* hamburger */
@@ -71,7 +78,7 @@ header nav .nav-hamburger button {
   border-radius: 0;
   padding: 0;
   background-color: var(--background-color);
-  color: inherit;
+  color: var(--header-nav-link-color);
   overflow: initial;
   text-overflow: initial;
   white-space: initial;
@@ -141,9 +148,15 @@ header nav[aria-expanded='true'] .nav-hamburger-icon::after {
 header .nav-brand {
   grid-area: brand;
   flex-basis: var(--header-brand-width);
-  font-size: var(--heading-font-size-s);
+  font-size: var(--header-nav-link-size);
   font-weight: 700;
   line-height: 1;
+}
+
+header .nav-brand a {
+  color: var(--header-nav-link-color);
+  font-size: var(--body-font-size-s);
+  font-weight: 700;
 }
 
 header nav .nav-brand img {
@@ -168,11 +181,11 @@ header nav[aria-expanded='true'] .nav-sections {
 header nav .nav-sections ul {
   list-style: none;
   padding-left: 0;
-  font-size: var(--body-font-size-s);
+  font-size: var(--header-nav-link-size);
 }
 
 header nav .nav-sections ul > li {
-  font-weight: 500;
+  font-weight: 400;
 }
 
 header nav .nav-sections ul > li > ul {
@@ -181,6 +194,13 @@ header nav .nav-sections ul > li > ul {
 
 header nav .nav-sections ul > li > ul > li {
   font-weight: 400;
+}
+
+header nav .nav-sections .default-content-wrapper > ul > li > p {
+  color: var(--header-nav-link-color);
+  font-size: var(--header-nav-link-size);
+  font-weight: 400;
+  cursor: pointer;
 }
 
 @media (width >= 900px) {
@@ -207,11 +227,11 @@ header nav .nav-sections ul > li > ul > li {
     top: 2px;
     right: 2px;
     transform: rotate(135deg);
-    width: 6px;
-    height: 6px;
-    border: 2px solid currentcolor;
+    width: 5px;
+    height: 5px;
+    border: 1.5px solid var(--header-nav-link-color);
     border-radius: 0 1px 0 0;
-    border-width: 2px 2px 0 0;
+    border-width: 1.5px 1.5px 0 0;
   }
 
   header nav .nav-sections .nav-drop[aria-expanded='true']::after {
@@ -222,7 +242,7 @@ header nav .nav-sections ul > li > ul > li {
 
   header nav .nav-sections ul {
     display: flex;
-    gap: var(--header-nav-gap);
+    gap: var(--header-nav-gap-desktop);
     margin: 0;
   }
 
@@ -243,7 +263,10 @@ header nav .nav-sections ul > li > ul > li {
     width: var(--header-dropdown-width);
     top: 150%;
     padding: var(--header-dropdown-padding);
-    background-color: var(--light-color);
+    background-color: var(--background-color);
+    border: 1px solid var(--overlay-background-color);
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
     white-space: initial;
     z-index: 1;
   }
@@ -257,17 +280,32 @@ header nav .nav-sections ul > li > ul > li {
     height: 0;
     border-left: 8px solid transparent;
     border-right: 8px solid transparent;
-    border-bottom: 8px solid var(--light-color);
+    border-bottom: 8px solid var(--background-color);
   }
 
   header nav .nav-sections .default-content-wrapper > ul > li > ul > li {
-    padding: 8px 0;
+    padding: 6px 0;
+  }
+
+  header nav .nav-sections .default-content-wrapper > ul > li > ul > li a {
+    color: var(--header-nav-link-color);
+    font-size: var(--header-nav-link-size);
+  }
+
+  header nav .nav-sections .default-content-wrapper > ul > li > ul > li a:hover {
+    color: var(--accent-blue);
   }
 }
 
 /* tools */
 header nav .nav-tools {
   grid-area: tools;
+}
+
+header nav .nav-tools a {
+  color: var(--header-nav-link-color);
+  font-size: var(--header-nav-link-size);
+  font-weight: 400;
 }
 
 header nav .nav-tools .button {

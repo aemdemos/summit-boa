@@ -1,0 +1,15 @@
+{
+  "status": "success",
+  "url": "https://about.bankofamerica.com/en",
+  "path": "en",
+  "timestamp": "2026-04-15T22:41:00.835Z",
+  "title": "About Bank of America - Impact, Partnerships, & Commitment",
+  "template": "about-homepage",
+  "blocks": [
+    "hero",
+    "cards",
+    "cards",
+    "columns",
+    "tabs"
+  ]
+}

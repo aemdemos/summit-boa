@@ -1,0 +1,71 @@
+{
+  "templates": [
+    {
+      "name": "about-homepage",
+      "urls": [
+        "https://about.bankofamerica.com/en"
+      ],
+      "description": "Bank of America About homepage with hero, content cards, tiles, tabbed content, and local impact section",
+      "blocks": [
+        {
+          "name": "hero",
+          "instances": [".uc-masthead"]
+        },
+        {
+          "name": "cards",
+          "instances": [".tile__list", ".uc-content-card-container"]
+        },
+        {
+          "name": "columns",
+          "instances": [".highlight-block--has-parsys"]
+        },
+        {
+          "name": "tabs",
+          "instances": [".uc-tab"]
+        }
+      ],
+      "sections": [
+        {
+          "id": "section-1-hero",
+          "name": "Hero Masthead",
+          "selector": ".aem-wrap--masthead-v2",
+          "style": null,
+          "blocks": ["hero"],
+          "defaultContent": []
+        },
+        {
+          "id": "section-2-tiles",
+          "name": "Impact Tiles",
+          "selector": ".aem-wrap--tile",
+          "style": null,
+          "blocks": ["cards"],
+          "defaultContent": ["h2#csp-class-0834bf59-718e-49e8-8fd1-1683a68f5525"]
+        },
+        {
+          "id": "section-3-content-cards",
+          "name": "Feature Stories",
+          "selector": ".aem-wrap--content-card-container",
+          "style": null,
+          "blocks": ["cards"],
+          "defaultContent": ["h2#csp-class-df693185-fee8-4ce6-8a1c-b38280da1573"]
+        },
+        {
+          "id": "section-4-highlight",
+          "name": "Local Impact Highlight",
+          "selector": ".aem-wrap--highlight-block",
+          "style": null,
+          "blocks": ["columns"],
+          "defaultContent": []
+        },
+        {
+          "id": "section-5-tabs",
+          "name": "Tabbed Content",
+          "selector": ".aem-wrap--tab",
+          "style": null,
+          "blocks": ["tabs"],
+          "defaultContent": ["h2#csp-class-10488969-0304-4de6-a585-59257eef515f"]
+        }
+      ]
+    }
+  ]
+}

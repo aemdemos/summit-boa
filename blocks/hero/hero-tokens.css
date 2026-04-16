@@ -1,7 +1,11 @@
 /* hero design tokens */
 :root {
-  --hero-padding: 40px 24px;
-  --hero-padding-desktop: 40px 32px;
-  --hero-min-height: 300px;
+  --hero-padding: 80px 24px 0;
+  --hero-padding-desktop: 80px 32px 0;
+  --hero-min-height: 400px;
+  --hero-min-height-desktop: 464px;
   --hero-heading-max-width: 1200px;
+  --hero-notch-bg: var(--link-color);
+  --hero-notch-padding: 32px 24px;
+  --hero-notch-padding-desktop: 64px;
 }
